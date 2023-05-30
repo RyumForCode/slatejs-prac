@@ -1,8 +1,16 @@
-import { useState } from 'react';
-import { createEditor, BaseEditor, Descendant } from 'slate';
+import { useCallback, useState } from 'react';
+import {
+  createEditor,
+  BaseEditor,
+  Descendant,
+  Transforms,
+  Element,
+  Editor,
+} from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
+import { CodeElement, DefaultElement } from './ParaElements';
 
-type CustomElement = { type: 'paragraph'; children: CustomText[] };
+type CustomElement = { type: string; children: CustomText[] };
 type CustomText = { text: string };
 
 declare module 'slate' {
@@ -23,13 +31,34 @@ const initialValue: Descendant[] = [
 const SlateComp = () => {
   const [editor] = useState(() => withReact(createEditor()));
 
+  const renderElement = useCallback((props: any) => {
+    switch (props.element.type) {
+      case 'code':
+        return <CodeElement {...props} />;
+      default:
+        return <DefaultElement {...props} />;
+    }
+  }, []);
+
   return (
     <Slate editor={editor} initialValue={initialValue}>
       <Editable
+        renderElement={renderElement}
         onKeyDown={(event) => {
-          if (event.key === '&') {
+          if (event.key === '`' && event.ctrlKey) {
             event.preventDefault();
-            editor.insertText('and');
+
+            const [match] = Editor.nodes(editor, {
+              match: (n: any) => n.type === 'code',
+            });
+
+            Transforms.setNodes(
+              editor,
+              { type: match ? 'paragraph' : 'code' },
+              {
+                match: (n) => Element.isElement(n) && Editor.isBlock(editor, n),
+              },
+            );
           }
         }}
       />
