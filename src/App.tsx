@@ -1,11 +1,8 @@
 import './App.css'
+import SlateComp from './components/SlateComp'
 
 function App() {
-  return (
-    <>
-      <h1>Hello!</h1>
-    </>
-  )
+  return <SlateComp />
 }
 
 export default App
