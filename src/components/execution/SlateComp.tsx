@@ -1,25 +1,10 @@
 import { useCallback, useState } from 'react';
-import { createEditor, BaseEditor, Descendant } from 'slate';
-import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
+import { createEditor, Descendant } from 'slate';
+import { Slate, Editable, withReact } from 'slate-react';
 import { CodeElement, DefaultElement } from '../editorModules/ParaElements';
 import { BoldLeaf } from '../editorModules/LaefComp';
 import CustomEditor from '../editorModules/CustomEditor';
 import EditorControlComp from '../visualControlComponents/EditorControlComp';
-
-type CustomElement = {
-  type: string | null;
-  bold?: boolean | null;
-  children: CustomText[];
-};
-type CustomText = { text: string };
-
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: BaseEditor & ReactEditor;
-    Element: CustomElement;
-    Text: CustomText;
-  }
-}
 
 const initialValue: Descendant[] = [
   {
