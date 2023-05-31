@@ -4,13 +4,18 @@ import {
   BaseEditor,
   Descendant,
   Transforms,
-  Element,
   Editor,
+  Text,
 } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
 import { CodeElement, DefaultElement } from './ParaElements';
+import { BoldLeaf } from './LaefComp';
 
-type CustomElement = { type: string; children: CustomText[] };
+type CustomElement = {
+  type: string | null;
+  bold?: boolean;
+  children: CustomText[];
+};
 type CustomText = { text: string };
 
 declare module 'slate' {
@@ -40,25 +45,42 @@ const SlateComp = () => {
     }
   }, []);
 
+  const renderBoldLeaf = useCallback((props: any) => {
+    return <BoldLeaf {...props} />;
+  }, []);
+
   return (
     <Slate editor={editor} initialValue={initialValue}>
       <Editable
         renderElement={renderElement}
+        renderLeaf={renderBoldLeaf}
         onKeyDown={(event) => {
-          if (event.key === '`' && event.ctrlKey) {
-            event.preventDefault();
+          if (!event.ctrlKey) return;
 
-            const [match] = Editor.nodes(editor, {
-              match: (n: any) => n.type === 'code',
-            });
+          switch (event.key) {
+            case '`': {
+              event.preventDefault();
+              const [match] = Editor.nodes(editor, {
+                match: (n: any) => n.type === 'code',
+              });
+              Transforms.setNodes(
+                editor,
+                { type: match ? null : 'code' },
+                { match: (n: any) => Editor.isBlock(editor, n) },
+              );
+              console.log(match);
+              break;
+            }
 
-            Transforms.setNodes(
-              editor,
-              { type: match ? 'paragraph' : 'code' },
-              {
-                match: (n) => Element.isElement(n) && Editor.isBlock(editor, n),
-              },
-            );
+            case 'b': {
+              event.preventDefault();
+              Transforms.setNodes(
+                editor,
+                { bold: true },
+                { match: (n: any) => Text.isText(n), split: true },
+              );
+              break;
+            }
           }
         }}
       />
