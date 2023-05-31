@@ -1,19 +1,14 @@
 import { useCallback, useState } from 'react';
-import {
-  createEditor,
-  BaseEditor,
-  Descendant,
-  Transforms,
-  Editor,
-  Text,
-} from 'slate';
+import { createEditor, BaseEditor, Descendant } from 'slate';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
-import { CodeElement, DefaultElement } from './ParaElements';
-import { BoldLeaf } from './LaefComp';
+import { CodeElement, DefaultElement } from '../editorModules/ParaElements';
+import { BoldLeaf } from '../editorModules/LaefComp';
+import CustomEditor from '../editorModules/CustomEditor';
+import EditorControlComp from '../visualControlComponents/EditorControlComp';
 
 type CustomElement = {
   type: string | null;
-  bold?: boolean;
+  bold?: boolean | null;
   children: CustomText[];
 };
 type CustomText = { text: string };
@@ -51,34 +46,22 @@ const SlateComp = () => {
 
   return (
     <Slate editor={editor} initialValue={initialValue}>
+      <EditorControlComp editor={editor} />
       <Editable
         renderElement={renderElement}
         renderLeaf={renderBoldLeaf}
         onKeyDown={(event) => {
           if (!event.ctrlKey) return;
-
           switch (event.key) {
             case '`': {
               event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n: any) => n.type === 'code',
-              });
-              Transforms.setNodes(
-                editor,
-                { type: match ? null : 'code' },
-                { match: (n: any) => Editor.isBlock(editor, n) },
-              );
-              console.log(match);
+              CustomEditor.toggleCodeBlock(editor);
               break;
             }
 
             case 'b': {
               event.preventDefault();
-              Transforms.setNodes(
-                editor,
-                { bold: true },
-                { match: (n: any) => Text.isText(n), split: true },
-              );
+              CustomEditor.toggleBoldMark(editor);
               break;
             }
           }
