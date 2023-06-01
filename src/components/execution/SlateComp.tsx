@@ -31,7 +31,17 @@ const SlateComp = () => {
   }, []);
 
   const pasteEventHandler = (e: any) => {
+    const { insertData } = editor;
+    const clipboardData = e.clipboardData;
+
+    const newData = new DataTransfer();
     e.preventDefault();
+
+    newData.setData(
+      'text/plain',
+      clipboardData.getData('application/x-slate-fragment'),
+    );
+    editor.insertData(newData);
   };
 
   return (
