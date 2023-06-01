@@ -5,6 +5,7 @@ import { CodeElement, DefaultElement } from '../editorModules/ParaElements';
 import { BoldLeaf } from '../editorModules/LaefComp';
 import CustomEditor from '../editorModules/CustomEditor';
 import EditorControlComp from '../visualControlComponents/EditorControlComp';
+import { withHistory } from 'slate-history';
 
 const initialValue: Descendant[] = [
   {
@@ -14,7 +15,7 @@ const initialValue: Descendant[] = [
 ];
 
 const SlateComp = () => {
-  const [editor] = useState(() => withReact(createEditor()));
+  const [editor] = useState(() => withReact(withHistory(createEditor())));
 
   const renderElement = useCallback((props: any) => {
     switch (props.element.type) {
@@ -29,12 +30,17 @@ const SlateComp = () => {
     return <BoldLeaf {...props} />;
   }, []);
 
+  const pasteEventHandler = (e: any) => {
+    e.preventDefault();
+  };
+
   return (
     <Slate editor={editor} initialValue={initialValue}>
       <EditorControlComp editor={editor} />
       <Editable
         renderElement={renderElement}
         renderLeaf={renderBoldLeaf}
+        onPaste={(e) => pasteEventHandler(e)}
         onKeyDown={(event) => {
           if (!event.ctrlKey) return;
           switch (event.key) {
