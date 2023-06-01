@@ -1,4 +1,5 @@
 import './App.css';
+import PasteTestComp from './components/execution/PasteTestComp';
 import SavingDatabaseComp from './components/execution/SavingDatabaseComp';
 import SlateComp from './components/execution/SlateComp';
 
@@ -7,6 +8,7 @@ function App() {
     <>
       <SlateComp />
       <SavingDatabaseComp />
+      <PasteTestComp />
     </>
   );
 }
