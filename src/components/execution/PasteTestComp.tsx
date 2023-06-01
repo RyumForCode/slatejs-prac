@@ -1,30 +1,56 @@
-import { useState } from 'react';
-import { Descendant, createEditor } from 'slate';
+import CryptoJS from 'crypto-js';
+import { ClipboardEventHandler, useState } from 'react';
+import { Element, Node, createEditor } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 
 const PasteTestComp = () => {
   const [editor] = useState(() => withReact(withHistory(createEditor())));
 
-  const initialValue: Descendant[] = [
+  const initialValue = [
     {
       type: 'paragraph',
       children: [{ text: 'Paste test component.' }],
     },
   ];
 
-  const pasteInEditalbeComp = (e: any) => {
+  const paste: ClipboardEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-    const clipData = e.clipboardData;
 
-    for (const i in clipData.items) {
-      console.log('List of the type : ', clipData.items[i].type);
+    const { clipboardData } = e;
+
+    const slateData = clipboardData.getData('application/x-slate-fragment'); // mime-type
+    if (slateData) {
+      const decodedData = decodeURIComponent(
+        CryptoJS.enc.Base64.parse(slateData).toString(CryptoJS.enc.Utf8),
+      );
+      const parsedElements = JSON.parse(decodedData);
+      // const newData = new DataTransfer();
+      // newData.setData('application/x-slate-fragment', newState);
+      // editor.insertData(newData);
+      // return;
     }
+
+    const textData = clipboardData.getData('text/plain');
+    if (textData) {
+      const newState: Element[] = [];
+      // const newData = new DataTransfer();
+      // newData.setData('application/x-slate-fragment', newState);
+      // editor.insertData(newData);
+      // return;
+    }
+
+    // for (let i = 0; i < clipboardData.items.length; i++) {
+    //   console.log(
+    //     'List of the type : ',
+    //     clipboardData.getData(clipboardData.items[i].type),
+    //   );
+    // }
   };
 
   return (
     <Slate editor={editor} initialValue={initialValue}>
-      <Editable onPaste={(e) => pasteInEditalbeComp(e)} />
+      <Editable onPaste={(e) => paste(e)} />
     </Slate>
   );
 };
