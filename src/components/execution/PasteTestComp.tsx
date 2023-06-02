@@ -16,7 +16,6 @@ const PasteTestComp = () => {
 
   const paste: ClipboardEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-
     const { clipboardData } = e;
 
     const slateData = clipboardData.getData('application/x-slate-fragment'); // mime-type
@@ -25,19 +24,22 @@ const PasteTestComp = () => {
         CryptoJS.enc.Base64.parse(slateData).toString(CryptoJS.enc.Utf8),
       );
       const parsedElements = JSON.parse(decodedData);
-      // const newData = new DataTransfer();
-      // newData.setData('application/x-slate-fragment', newState);
-      // editor.insertData(newData);
-      // return;
+      console.log('parsed:', parsedElements);
+
+      const newData = new DataTransfer();
+      newData.setData('application/x-slate-fragment', slateData);
+      editor.insertData(newData);
+      return;
     }
 
     const textData = clipboardData.getData('text/plain');
     if (textData) {
       const newState: Element[] = [];
+      console.log('mememe');
       // const newData = new DataTransfer();
       // newData.setData('application/x-slate-fragment', newState);
       // editor.insertData(newData);
-      // return;
+      return;
     }
 
     // for (let i = 0; i < clipboardData.items.length; i++) {

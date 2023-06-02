@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import { createEditor, Descendant } from 'slate';
+import { createEditor, Descendant, Element, Transforms } from 'slate';
 import { Slate, Editable, withReact } from 'slate-react';
 import { CodeElement, DefaultElement } from '../editorModules/ParaElements';
 import { BoldLeaf } from '../editorModules/LaefComp';
-import CustomEditor from '../editorModules/CustomEditor';
+import EditorController from '../editorModules/EditorController';
 import EditorControlComp from '../visualControlComponents/EditorControlComp';
 import { withHistory } from 'slate-history';
 
@@ -56,13 +56,41 @@ const SlateComp = () => {
           switch (event.key) {
             case '`': {
               event.preventDefault();
-              CustomEditor.toggleCodeBlock(editor);
+              EditorController.toggleCodeBlock(editor);
               break;
             }
 
             case 'b': {
               event.preventDefault();
-              CustomEditor.toggleBoldMark(editor);
+              EditorController.toggleBoldMark(editor);
+              break;
+            }
+
+            case 'p': {
+              event.preventDefault();
+              Transforms.setNodes(
+                editor,
+                { testKey: 'This is the Value.' },
+                { match: (n) => Element.isElement(n) },
+              );
+              break;
+            }
+
+            case 'l': {
+              event.preventDefault();
+              EditorController.moveBlock(editor);
+              break;
+            }
+
+            case `m`: {
+              event.preventDefault();
+              EditorController.insertWord(editor);
+              break;
+            }
+
+            case 'd': {
+              event.preventDefault();
+              EditorController.testForMatchTest(editor);
               break;
             }
           }

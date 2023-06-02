@@ -1,4 +1,4 @@
-import CustomEditor from '../editorModules/CustomEditor';
+import CustomEditor from '../editorModules/EditorController';
 
 const EditorControlComp = ({ editor }: any) => {
   return (
