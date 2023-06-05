@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 import { ClipboardEventHandler, useState } from 'react';
-import { Element, Node, createEditor } from 'slate';
+import { Element, Transforms, createEditor } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 
@@ -17,6 +17,27 @@ const PasteTestComp = () => {
   const paste: ClipboardEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     const { clipboardData } = e;
+    const cData = clipboardData;
+    const data = new DataTransfer();
+    // const fragment = JSON.parse(cData.getData('application/x-slate-fragment'));
+    // fragment.isLengthOverflow = false;
+    // const serializedFragment = JSON.stringify(fragment);
+    // console.log(serializedFragment);
+    Transforms.setNodes(
+      editor,
+      { soCool: 'ohyea' },
+      { match: (n) => Element.isElement(n) },
+    );
+    console.log(
+      JSON.parse(
+        decodeURIComponent(
+          CryptoJS.enc.Base64.parse(
+            cData.getData('application/x-slate-fragment'),
+          ).toString(CryptoJS.enc.Utf8),
+        ),
+      ),
+    );
+    return;
 
     const slateData = clipboardData.getData('application/x-slate-fragment'); // mime-type
     if (slateData) {
